@@ -21,7 +21,7 @@ function getHumanChoice() {
 }
 
 // Testing the function
-console.log("Human choice:", getHumanChoice());
+//console.log("Human choice:", getHumanChoice());
 
 // Step 4: Declare the player score variables
 let humanScore = 0;
@@ -64,5 +64,6 @@ function game() {
         console.log("The game is a tie overall!");
     }
 }
-
+// Start the game
+game();
 // For now we are done. Like The Odin Project suggests, we will return to this project later.
