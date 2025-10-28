@@ -11,59 +11,97 @@ function getComputerChoice() {
         case 2: return 'scissors';
     }
 }
-
-// Step 3: Write the logic to get the human choice
-function getHumanChoice() {
-
-    const userInput = prompt("Please enter your choice: rock, paper, or scissors");
-    // We dont validate as per instructions, but add toLowerCase due to step 5
-    return userInput.toLowerCase();
-}
-
-// Testing the function
-//console.log("Human choice:", getHumanChoice());
-
 // Step 4: Declare the player score variables
 let humanScore = 0;
 let computerScore = 0;
 
-// Step 5: Write the logic to play a single round
-function playRound(humanChoice, computerChoice) {
-    if (humanChoice === computerChoice) {
-        return "It's a tie!";
-    }
+// Step 5: Write the logic to play a single round (UI-driven)
+const WINNING_SCORE = 5;
+
+function decideRound(playerSelection, computerSelection) {
+    if (playerSelection === computerSelection) return 'tie';
+
     if (
-        (humanChoice === "rock" && computerChoice === "scissors") ||
-        (humanChoice === "paper" && computerChoice === "rock") ||
-        (humanChoice === "scissors" && computerChoice === "paper")
+        (playerSelection === 'rock' && computerSelection === 'scissors') ||
+        (playerSelection === 'paper' && computerSelection === 'rock') ||
+        (playerSelection === 'scissors' && computerSelection === 'paper')
     ) {
+        return 'player';
+    }
+
+    return 'computer';
+}
+
+function playRound(playerSelection) {
+    if (!playerSelection) return;
+
+    const computerSelection = getComputerChoice();
+    const outcome = decideRound(playerSelection, computerSelection);
+
+    if (outcome === 'tie') {
+        showResult(`You chose ${playerSelection}, computer chose ${computerSelection}. It's a tie!`);
+    } else if (outcome === 'player') {
         humanScore++;
-        return "You win!";
+        showResult(`You chose ${playerSelection}, computer chose ${computerSelection}. You win this round!`);
     } else {
         computerScore++;
-        return "You lose!";
+        showResult(`You chose ${playerSelection}, computer chose ${computerSelection}. You lose this round.`);
+    }
+
+    updateScoreboard();
+
+    if (humanScore >= WINNING_SCORE || computerScore >= WINNING_SCORE) {
+        const finalMessage = humanScore > computerScore
+            ? `Congratulations — you reached ${WINNING_SCORE} points and won the game!`
+            : `Game over — the computer reached ${WINNING_SCORE} points and won. PS: this is all random.`;
+        showResult(finalMessage);
+        setButtonsEnabled(false);
     }
 }
 
-//Write the logic to play a entire game
+// UI helper functions
+function updateScoreboard() {
+    const el = document.getElementById('scoreboard');
+    if (el) el.textContent = `You: ${humanScore} - Computer: ${computerScore}`;
+}
 
-//function game() {
-    for (let round = 1; round <= 5; round++) {
-        const humanChoice = getHumanChoice();
-        const computerChoice = getComputerChoice();
-        console.log(`Round ${round}: You chose ${humanChoice}, Computer chose ${computerChoice}.`);
-        console.log(playRound(humanChoice, computerChoice));
-        console.log(`Score - You: ${humanScore}, Computer: ${computerScore}`);
-    }
+function showResult(message) {
+    const el = document.getElementById('result');
+    if (el) el.textContent = message;
+    console.log(message);
+}
 
-    if (humanScore > computerScore) {
-        console.log("Congratulations! You are the overall winner!");
-    } else if (computerScore > humanScore) {
-        console.log("Sorry! The computer is the overall winner, but don't feel bad, it was due to randomness!");
-    } else {
-        console.log("The game is a tie overall!");
-    }
-//}
-// Start the game
-//game();
-// For now we are done. Like The Odin Project suggests, we will return to this project later.
+function setButtonsEnabled(enabled) {
+    ['rock', 'paper', 'scissors'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.disabled = !enabled;
+            if (!enabled) btn.classList.add('disabled'); else btn.classList.remove('disabled');
+        }
+    });
+}
+
+function resetGame() {
+    humanScore = 0;
+    computerScore = 0;
+    updateScoreboard();
+    showResult('Game reset. Make your move!');
+    setButtonsEnabled(true);
+}
+
+// Event listeners for buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const rock = document.getElementById('rock');
+    const paper = document.getElementById('paper');
+    const scissors = document.getElementById('scissors');
+    const reset = document.getElementById('reset');
+
+    if (rock) rock.addEventListener('click', () => playRound('rock'));
+    if (paper) paper.addEventListener('click', () => playRound('paper'));
+    if (scissors) scissors.addEventListener('click', () => playRound('scissors'));
+    if (reset) reset.addEventListener('click', resetGame);
+
+    // initial UI
+    updateScoreboard();
+    showResult('Time to act! First to 5 wins.');
+});
