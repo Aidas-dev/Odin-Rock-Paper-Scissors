@@ -47,7 +47,7 @@ function playRound(humanChoice, computerChoice) {
 
 //Write the logic to play a entire game
 
-function game() {
+//function game() {
     for (let round = 1; round <= 5; round++) {
         const humanChoice = getHumanChoice();
         const computerChoice = getComputerChoice();
@@ -63,7 +63,7 @@ function game() {
     } else {
         console.log("The game is a tie overall!");
     }
-}
+//}
 // Start the game
-game();
+//game();
 // For now we are done. Like The Odin Project suggests, we will return to this project later.
